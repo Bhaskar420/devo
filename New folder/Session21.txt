@@ -1,0 +1,648 @@
+Nested Loop:
+------------
+LOOP 
+   Sequence of statements1 
+   LOOP 
+      Sequence of statements2 
+   END LOOP; 
+END LOOP;
+
+The syntax for a nested FOR LOOP statement in PL/SQL is as follows -
+
+FOR counter1 IN initial_value1 .. final_value1 LOOP 
+   sequence_of_statements1 
+   FOR counter2 IN initial_value2 .. final_value2 LOOP 
+      sequence_of_statements2 
+   END LOOP; 
+END LOOP;
+
+The syntax for a nested WHILE LOOP statement in Pascal is as follows -
+
+WHILE condition1 LOOP 
+   sequence_of_statements1 
+   WHILE condition2 LOOP 
+      sequence_of_statements2 
+   END LOOP; 
+END LOOP; 
+
+--Example for Nested loop
+
+DECLARE
+   CURSOR dept_cur IS SELECT deptno FROM dept ORDER BY deptno;
+ 
+   CURSOR emp_cur (dno number) IS
+   SELECT ename FROM emp WHERE deptno = dno;
+BEGIN
+   FOR i IN dept_cur LOOP
+      DBMS_OUTPUT.put_line('Employees in Department '||TO_CHAR(i.deptno));
+ 
+      FOR j IN emp_cur(i.deptno) LOOP
+         DBMS_OUTPUT.put_line('...Employee is '||j.ename);
+      END LOOP;
+ 
+  END LOOP;
+END;
+/
+
+
+
+
+
+Exception
+------------
+EXCEPTION HANDLING:
+-------------------
+
+Types of Errors:
+1. Compile time errors : These errors will occur when the program gets compiled. It generates errors in those instructions of a program, which are not written as per the provided rules. Hence these errors are called Syntax Errors.
+
+2. Logical Errors : Required Output and generated output when does not get match, such type of errors are called Logical Errors.
+
+3. Runtime Errors : These errors occur when the program is in execution. When these errors occur the program gets terminated in between the execution. To handle such runtime errors and have smooth execution of a program the concept of Exception handling is used.
+
+Exception handling is classified into 2 types;
+1. Predefined Exceptions
+2. User Defined Exceptions
+
+1. Predefined Exceptions
+
+ZERO_DIVIDE
+NO_DATA_FOUND	
+TOO_MANY_ROWS	
+DUP_VAL_ON_INDEX	
+INVALID_CURSOR	
+NOT_LOGGED_ON	
+LOGIN_DENIED	
+INVALID_NUMBER	
+PROGRAM_ERROR	
+VALUE_ERROR	
+CURSOR_ALREADY_OPEN	
+
+	
+examples:
+1. Write a program to divide 2 numbers and handle necessary exception?
+DECLARE
+   a NUMBER:=&a;
+   b NUMBER:=&b;
+   c NUMBER;
+BEGIN
+   c:=a/b;
+   DBMS_OUTPUT.PUT_LINE('QUOTIENT IS ......'||c);
+EXCEPTION
+   WHEN ZERO_DIVIDE THEN
+   DBMS_OUTPUT.PUT_LINE('CANT DIVIDE THE NUMBER BY 0');
+END;
+/
+
+/* PROGRAM TO DISPLAY EMPLOYEE DATA  USING EXCEPTIONS */
+
+DECLARE
+  ENO NUMBER(4);
+  ENAM VARCHAR2(10);
+  JB VARCHAR2(10);
+  SL NUMBER(7);
+BEGIN
+  ENO:=&EMPLOYEE_NUMBER;
+  SELECT ENAME, JOB, SAL INTO ENAM, JB, SL FROM EMP WHERE EMPNO=ENO;
+  DBMS_OUTPUT.PUT_LINE('EMPLOYEE NAME IS '||ENAM);
+  DBMS_OUTPUT.PUT_LINE('DESIGNATION IS '||JB);
+  DBMS_OUTPUT.PUT_LINE('EMPLOYEE SALARY IS '||SL);
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('THERE ARE NO EMPLOYEES WITH THIS NUMBER');
+END;
+/
+
+
+
+/* 3. Write a program to input salary and display empno,ename,job,deptno from emp table? Handle necessary exceptions. */
+DECLARE
+  pay emp.sal%TYPE:=&pay;
+  eno emp.empno%TYPE;
+  en emp.ename%TYPE;
+  des EMP.JOB%TYPE;
+  dno emp.deptno%TYPE;
+BEGIN
+  SELECT empno,ename,job,deptno INTO eno,en,des,dno FROM emp WHERE sal=pay;
+  DBMS_OUTPUT.PUT_LINE(eno||' '||en||'  '||des||'  '||pay||'  '||dno);
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+  DBMS_OUTPUT.PUT_LINE('NO ROW SELECTED');
+  WHEN TOO_MANY_ROWS THEN
+  DBMS_OUTPUT.PUT_LINE('MULTIPLE ROWS CANT BE SELECTED');
+  WHEN VALUE_ERROR THEN
+  DBMS_OUTPUT.PUT_LINE('MEM INSUFFICIENT');
+END;
+/
+			(OR)
+DECLARE
+  pay emp.sal%TYPE:=&pay;
+  eno emp.empno%TYPE;
+  en emp.ename%TYPE;
+  des VARCHAR2(5);
+
+  SELECT empno,ename,job,deptno INTO eno,en,des,dno FROM emp WHERE sal=pay;
+  DBMS_OUTPUT.PUT_LINE(eno||' '||en||'  '||des||'  '||pay||'  '||dno);
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+  DBMS_OUTPUT.PUT_LINE('NO ROW SELECTED');
+  WHEN OTHERS THEN
+ DBMS_OUTPUT.PUT_LINE(SQLCODE ||'   '||SQLERRM);
+END;
+/
+		USER DEFINED EXCEPTIONS
+                -----------------------
+Exceptions can be created of user defined, based on 3 steps;
+
+1. Declaration of exception
+2. Raising of exception
+3. Handling the exception
+
+1. Declaration of Exception:
+	
+Syntax:
+	DECLARE
+		exception_name EXCEPTION;
+2. Raising an Exception :
+
+Syntax:
+	RAISE exception_name;
+3. Handling the exception:
+
+	User defined exception should be handled using EXCEPTION block.
+Syntax:
+	WHEN exception_name THEN
+		statements;
+
+/* Write a program to find the given mark pass or fail and handle the exception using user defined exception? */
+declare 
+mark number(3);
+MarkException Exception;
+begin
+mark:=&mark;
+if((mark <0) or (mark>100)) then
+raise MarkException; --raise exception
+elsif (mark >=40) then
+dbms_output.put_line('Given mark is pass:='||mark);
+else
+dbms_output.put_line('Given mark is fail='||mark);
+end if;
+exception
+when MarkException then
+dbms_output.put_line('Invalid mark');
+end;
+/
+
+--Salary Exception (20000 to 50000)
+
+declare
+name varchar2(20);
+salary number(5);
+salary_exception Exception;
+begin
+name:='&ename';
+salary:=&salary;
+if ((salary >=20000) and (salary <=50000))
+dbms_output.put_line('Your salary is='||salary);
+else
+raise salary_exception;
+end if;
+exception
+when salary_exception then
+dbms_output.put_line('Invalid Salary');
+end;
+/
+ASSIGNMENT:
+
+ReadingException:
+-----------------
+oldread : 2000
+newread : 1500
+
+if newread >=oldread
+unit:=newread - oldread;
+else
+raise readingException;
+
+
+
+
+
+
+--1 2 3 4 5 7 8 9 10
+
+--Example for continue statement (From 11g)
+
+DECLARE
+i number;
+begin
+for i in 1..10
+loop
+if(i=6) then
+continue;
+else
+dbms_output.put_line(i);
+end if;
+end loop;
+end;
+/
+
+Assignment:
+-----------
+1 2 3 4....100 except(20 40,60 80)
+
+
+/* Example for exit statement */ (From 11g)
+DECLARE
+i number(5);
+begin
+for i in 1..10
+loop
+if(i=6) the
+exit;
+else
+dbms_output.put_line(i);
+end if;
+end loop;
+end;
+/
+
+
+SUB PROGRAMS:
+-------------
+	It is a process of splitting a large application program into small modules or blocks.
+	Oracle supports to create subprogram in the following ways;
+1. procedures 
+2. Functions
+3. Packages
+4. Triggers
+
+Advantages of Subprograms:
+1. Readability of a program gets enhanced.
+2. Reusability.
+3. Extensibility (Code in the subprogram can be increased or can be decreased)
+4. Error Detection and Modification is quite easy.
+5. Network Traffic gets reduces.
+6. Performance gets increases.
+7. provides high security for business logic.
+
+PROCEDURES:
+	Procedure is a self contained or predefined program which may or may not return any value.
+	 
+* it accept input and output arguments.
+
+* procedure accepts 1024 input and 1024 output arguments.
+
+* Input argument work for call by values and output argument will for call by reference.
+
+
+Syntax:
+
+CREATE [ OR REPLACE ] PROCEDURE proc_name(arg1 mode data_type[ ,....])
+IS/AS
+  [local declaration;]
+BEGIN
+  statement 1;
+  statement 2;
+  .......
+  statement n;
+[EXCEPTION
+  exception handlers;]
+END;
+/
+
+EXECUTION OF PROCEDURE:
+
+A procedure which is created can be executed in 2 ways;
+1. using EXEC command.
+	[EXEC] proc_name(list_of_args)
+2. using Main program.
+	proc_name(list_of_args);
+EXAMPLES:
+
+create or replace procedure Arithmetic(a  number,b number)
+is
+c number;
+d number;
+e number;
+f number;
+begin
+c:=a+b;
+d:=a-b;
+e:=a*b;
+f:=a/b;
+dbms_output.put_line('addition='||c);
+dbms_output.put_line('subtract='||d);
+dbms_output.put_line('multiply='||e);
+dbms_output.put_line('quotient='||f);
+end;
+/
+
+--EXEC ADDITION(100,20);
+
+
+
+/* 2.create a procedure to accept empno as argument and  return corresponding emp details. */
+
+create or replace procedure empdetails(eno number)
+as
+e1 emp%rowtype;
+BEGIN
+  select * into e1 from emp where empno=eno;
+dbms_output.put_line(e1.ename||'   '||e1.empno||'   '||e1.sal);
+exception
+when no_data_found then
+dbms_output.put_line(' No rows are available');
+WHEN OTHERS THEN
+DBMS_OUTPUT.PUT_LINE(SQLCODE ||'   '||SQLERRM);
+end;
+/
+ED P4.SQL
+
+/* PRINTING TABLE THROUGH A PROCEDURE */
+CREATE OR REPLACE PROCEDURE SHOW_TABLE(N NUMBER) IS
+  P NUMBER(15);
+BEGIN
+ dbms_output.put_line('MULTIPLICATION TABLE OF '||N);
+  FOR C IN 1..15
+  LOOP
+    P:=N*C;
+    DBMS_OUTPUT.PUT_LINE(N||' * '||C||' = '||P);
+  END LOOP;
+  DBMS_OUTPUT.PUT_LINE('*******************************');
+END;
+/
+
+ED P5.SQL
+
+/* USING SHOW_TABLE PROCEDURE IN A PROGRAM */
+DECLARE
+   X NUMBER(5);
+BEGIN
+   X:=&X;
+   SHOW_TABLE(X);
+END;
+/
+
+
+/* PROCEDURE   USING FOR LOOP WITH CURSOR PROGRAMS */
+
+CREATE OR REPLACE PROCEDURE SALARY_INCREMENT(D NUMBER) IS
+  INCR EMP.SAL%TYPE;
+  NET EMP.SAL%TYPE;
+  CURSOR C1 IS SELECT * FROM EMP WHERE DEPTNO=D;
+BEGIN
+  DBMS_OUTPUT.PUT_LINE('=================================');
+  FOR X IN C1    /* X IS ASSUNMED AS A ROWTYPE VARIABLE */
+  LOOP
+    IF X.JOB='MANAGER' THEN
+      INCR:=400;
+    ELSIF X.JOB='CLERK' THEN
+      INCR:=300;
+    ELSIF X.JOB='SALESMAN' THEN
+      INCR:=200;
+    ELSE
+      INCR:=500;
+    END IF;
+    NET:=X.SAL+INCR;
+    UPDATE EMP SET SAL=NET WHERE EMPNO=X.EMPNO;
+    DBMS_OUTPUT.PUT_LINE(X.EMPNO||'  '||X.ENAME||' '||X.JOB||' '||X.SAL||' '||INCR||' '||NET);
+  END LOOP;
+  DBMS_OUTPUT.PUT_LINE('=================================');
+END;
+/
+
+
+Write a procedure to accept the string as argument and reverse the string?
+
+create or replace procedure reverse1(name varchar2)
+is
+rname varchar2(20);
+begin
+select reverse(name) into rname from emp where ename=name;
+dbms_output.put_line(rname);
+end;
+/
+
+
+
+/* Write a procedure for swapping two numbers? (Using 3rd variable) */
+
+create or replace procedure p7(a in out number,
+b in out number)
+as
+t number;
+begin
+t:=a;
+a:=b;
+b:=t;
+end;
+/
+
+sql> exec p7(1000,2000);
+
+--How to invoke stored procedure
+declare 
+a number;
+b number;
+begin
+a:=&a;
+b:=&b;
+p7(a,b);
+dbms_output.put_line('after swapping=');
+dbms_output.put_line('a='||a);
+dbms_output.put_line('b='||b);
+end;
+/
+
+
+Write a  PL/SQL Oracle program to add two numbers using procedure.
+
+Procedure: - 
+
+create or replace procedure add_proc
+(n1 IN number,n2 IN number, tot OUT number)as
+begin
+tot:=n1+n2;
+end;
+/
+
+Sample Program Code: -
+
+declare
+ num1 number(3);
+ num2 number(3);
+ result number(4);
+begin
+ num1:=&num1;
+ num2:=&num2;
+ add_proc(num1,num2,result);
+ dbms_output.put_line('Addition is: '||result);
+end;
+
+/* create a procedure to insert records into dept table and check the availabilty */
+
+create or replace procedure insrec (a number,b varchar2,c varchar2)
+is 
+n number;
+begin
+select count(*) into n from dept where deptno=a;
+if (n=0) then
+insert into dept values(a,b,c);
+dbms_output.put_line('1 row inserted');
+else
+dbms_output.put_line('Dept details exists');
+end if;
+end;
+/
+
+
+
+/* create a procedure to update the employee salary if it is working and valid increment above 500 */
+
+create or replace procedure updaterec 
+(a number,incr number)
+is 
+n number;
+s number;
+begin
+s:=incr;
+select count(*) into n from emp where empno=a;
+if(n=0) then
+dbms_output.put_line('Employee does not exists');
+elsif s<500 then
+dbms_output.put_line('Invalid increment');
+else
+update emp set sal=sal+s where empno=a;
+dbms_output.put_line('1 row updated');
+end if;
+end;
+/
+
+
+ 
+
+
+--Write a plsql program to display fiboncci series?
+A:=0
+B:=1
+1
+2
+3
+5
+8
+13
+21
+34
+55
+89
+144
+
+create or replace procedure fiboncci(n number)
+as
+  f1 number(3);
+  f2 number(3);
+  f3 number(3);
+  num number(3);
+begin
+  f1:=0;
+  f2:=1;
+  f3:=0;
+  num:=1;
+  while num<=n
+  loop
+ dbms_output.put_line(f3);
+ f1:=f2;
+ f2:=f3;
+ f3:=f1+f2;
+ num:=num+1;
+  end loop;
+end;
+/
+
+/* Create procedure to display the emp details Horizontal format SMITH,ALLEN,MARTIN,...... */
+
+create or replace procedure display
+as
+name emp.ename%type;
+result varchar2(200):='';
+cursor c1 is select ename from emp;
+begin
+open c1;
+loop
+fetch c1 into name;
+result:=result||name||',';
+exit when c1%notfound;
+end loop;
+close c1;
+dbms_output.put_line(result);
+end;
+/
+
+
+--Create procedure
+
+CREATE OR REPLACE PROCEDURE findMin(x IN number, y IN number, z OUT number) IS 
+BEGIN 
+   IF x < y THEN 
+      z:= x; 
+   ELSE 
+      z:= y; 
+   END IF; 
+END; 
+/
+
+--How to invoke stored procedure?
+declare 
+a number;
+b number;
+c number; 
+BEGIN 
+   a:= 23; 
+   b:= 45; 
+   findMin(a, b, c); 
+   dbms_output.put_line(' Minimum of (23, 45) : ' || c); 
+END; 
+/
+
+
+--To create a procedure to display holiday list
+
+create or replace procedure holiday
+(stdate date,enddate date)
+is
+SDATE DATE;
+EDATE DATE;
+begin
+SDATE:=stdate;
+EDATE:=enddate;
+while (SDATE <= EDATE)
+loop
+if(to_char(SDATE,'DY') in('SAT','SUN')) THEN
+DBMS_OUTPUT.PUT_LINE(SDATE);
+END IF;
+SDATE:=TO_DATE(SDATE)+1;
+END LOOP;
+end;
+/
+
+exec holiday '01-MAY-18','31-MAY-18'
+
+--To create a procedure to display working day list
+
+create or replace procedure workingday(stdate date,enddate date)
+is
+SDATE DATE;
+EDATE DATE;
+begin
+SDATE:=stdate;
+EDATE:=enddate;
+while (TO_DATE(SDATE) <= TO_DATE(EDATE))
+loop
+if(to_char(SDATE,'DY') NOT in('SAT','SUN')) THEN
+DBMS_OUTPUT.PUT_LINE(SDATE);
+END IF;
+SDATE:=TO_DATE(SDATE)+1;
+END LOOP;
+end;
+/

@@ -1,0 +1,220 @@
+plsql
+select statement syntax:
+
+select fieldname1,fieldname2,fieldname3 into variable1,variable2,variable3 
+from <tablename> where <condition>;
+
+
+-- plsql program to select dept details from dept ?
+
+declare
+e1 dept.deptno%type;
+e2 dept.dname%type;
+e3 dept.loc%type;
+begin
+select deptno,dname,loc into e1,e2,e3 from dept
+where deptno=&deptno;
+dbms_output.put_line(e1||'    '||e2||'    '||e3);
+end;
+/
+
+
+declare
+e1 salgrade.grade%type;
+e2 salgrade.losal%type;
+e3 salgrade.hisal%type;
+begin
+select grade,losal,hisal into e1,e2,e3 from 
+salgrade where grade=&grade;
+dbms_output.put_line(e1 ||'    '||e2||'    '||e3);
+end;
+/
+
+
+
+declare
+e1 dept.deptno%type;
+e2 dept.dname%type;
+e3 dept.loc%type;
+begin
+e1:=&deptno;
+e2:='&dname';
+e3:='&loc';
+insert into dept values(e1,e2,e3);
+dbms_output.put_line('1 row inserted');
+end;
+/
+
+declare
+e1 DEPT.DEPTNO%TYPE;
+begin
+e1:=&deptno;
+delete from dept where deptno=&e1;
+dbms_output.put_line('1 row deleted');
+end;
+/
+
+
+
+
+/* Write a plsql program to display swapping of
+2 numbers without using temporary variable */
+
+declare
+a number;
+b number;
+begin
+a:=&a;
+b:=&b;
+a:=a+b;
+b:=a-b;
+a:=a-b;
+dbms_output.put_line('after swapping');
+dbms_output.put_line('a='||a);
+dbms_output.put_line('b='||b);
+end;
+/
+
+
+PL SQL Program  to check the given number is armstrong or not. 
+
+153=> 1+125+27=> 153
+370=> 27+343+0=> 370
+371=> 27+343+1=> 371
+407=> 64+0+343=> 407
+
+algorithm:
+----------
+n=153;
+s=0;
+while n>0
+{
+r=n%10;
+s=s+pow(r,3);
+n=n/10;
+}
+
+
+
+
+declare
+n number(4);
+s number(4):=0;
+t number(4);
+r number(4);
+begin
+n:=&n;
+t:=n;
+while t>0 
+loop
+r:=mod(t,10);
+s:=s+power(r,3);
+t:=trunc(t/10);
+end loop;
+if(s=n) then
+dbms_output.put_line('The given number ' || n || 'is an armstrong number');
+else
+dbms_output.put_line('The given number ' || n || 'is not an armstrong number'); 
+end if;
+end;
+
+Assignment:
+------------
+
+* Write a plsql program to display reverse number 
+n=697 => 796
+
+WHILE (N>0)
+{
+R=N%10;
+S=S*10+R;
+N=N/10;
+}
+
+
+* Write a plsql program to display sum of digits?
+
+n=697 => 22
+WHILE (N>0)
+{
+R=N%10;
+S=S+R;
+N=N/10;
+}
+
+* Write a plsql program to display count of digits?
+
+n=74848 => 5 digits
+WHILE (N>0)
+{
+R=N%10;
+S=S+1;
+N=N/10;
+}
+
+Plsql Mini Project (ATM Example)
+--------------------------------
+
+#Python ATM Banking Example
+
+print('Welcome to HDFC Bank ATM')
+restart=('Y')
+chances = 3
+balance = 6700
+while chances >= 0:
+    pin = int(input('Please Enter You 4 Digit Pin: '))
+    if pin == (1234):
+        print('You entered you pin Correctly\n')
+        while restart not in ('n','NO','no','N'):
+            print('Please Press 1 For Your Balance\n')
+            print('Please Press 2 To Make a Withdrawl\n')
+            print('Please Press 3 To Pay in\n')
+            print('Please Press 4 To Return Card\n')
+            option = int(input('What Would you like to choose?'))
+            if option == 1:
+                print('Your Balance is ,balance',balance)
+                restart = input('Would You you like to go back? ')
+                if restart in ('n','NO','no','N'):
+                    print('Thank You')
+                    restart=('y')
+                    break
+            elif option == 2:
+                option2 = ('y')
+                withdrawl = float(input('How Much Would you like to withdraw?  '))
+                if withdrawl in [1000, 2000, 3000, 4000, 5000, 10000]:
+                    balance = balance - withdrawl
+                    print ('\nYour Balance is now',balance)
+                    restart = input('Would You you like to go back? ')
+                    if restart in ('n','NO','no','N'):
+                        print('Thank You')
+                        break
+                elif withdrawl != [10, 20, 40, 60, 80, 100]:
+                    print('Invalid Amount, Please Re-try\n')
+                    restart = ('y')
+                elif withdrawl == 1:
+                    withdrawl = float(input('Please Enter Desired amount:'))    
+
+            elif option == 3:
+                Pay_in = float(input('How Much Would You Like To Pay In? '))
+                balance = balance + Pay_in
+                print ('\nYour Balance is now ',balance)
+                restart = input('Would You you like to go back? ')
+                if restart in ('n','NO','no','N'):
+                    print('Thank You')
+                    break
+            elif option == 4:
+                print('Please wait whilst your card is Returned...\n')
+                print('Thank you for you service')
+                break
+            else:
+                print('Please Enter a correct number. \n')
+                restart = ('y')
+    elif pin != ('1234'):
+        print('Incorrect Password')
+        chances = chances - 1
+        if chances == 0:
+            print('\nNo more tries')
+            break
+
+
+Please send mail : chinnaduraisrivai@gmail.com
